@@ -102,7 +102,6 @@
         "cbdnsLabelPrefix": "[toLower(concat('cbd', resourceGroup().name))]",
         "imagePublisher": "MicrosoftWindowsServer",
         "imageOffer": "WindowsServer",
-        "dnsServerPrivateIp": "10.0.0.4",
         "subnet-id": "[concat(resourceId(parameters('adVnetRG'),'Microsoft.Network/virtualNetworks',parameters('adVnetName')),'/subnets/',parameters('adSubnetName'))]",
         "publicIpRef": "publicIp",
         "brokerIpRef": "brokerpublicIp",
@@ -322,7 +321,6 @@
                 ],
                 "dnsSettings": {
                     "dnsServers": [
-                        "[variables('dnsServerPrivateIp')]"
                     ]
                 }
             }
@@ -352,7 +350,6 @@
                 ],
                 "dnsSettings": {
                     "dnsServers": [
-                        "[variables('dnsServerPrivateIp')]"
                     ]
                 }
             }
@@ -383,7 +380,6 @@
                 ],
                 "dnsSettings": {
                     "dnsServers": [
-                        "[variables('dnsServerPrivateIp')]"
                     ]
                 }
             }
