@@ -95,6 +95,27 @@
             "metadata": {
                 "description": "Location for all resources."
             }
+        },
+        "gwvmname": {
+            "type": "string",
+            "defaultValue": "gwvm",
+            "metadata": {
+                "description": "Machine Name for Gateway VM"
+            }
+        },
+        "cbvmname": {
+            "type": "string",
+            "defaultValue": "cbvm",
+            "metadata": {
+                "description": "Machine Name for broker VM"
+            }
+        },
+        "sessionhostname": {
+            "type": "string",
+            "defaultValue": "rdsh",
+            "metadata": {
+                "description": "Machine Name prefix for rsh session hosts"
+            }
         }
     },
     "variables": {
@@ -150,7 +171,7 @@
             "apiVersion": "2017-03-30",
             "type": "Microsoft.Compute/availabilitySets",
             "location": "[parameters('location')]",
-            "name": "gw-availabilityset",
+            "name": "concat([parameters('gwvmname')-availabilityset)",
             "properties": {
                 "PlatformUpdateDomainCount": 20,
                 "PlatformFaultDomainCount": 2
@@ -163,7 +184,7 @@
             "apiVersion": "2017-03-30",
             "type": "Microsoft.Compute/availabilitySets",
             "location": "[parameters('location')]",
-            "name": "cb-availabilityset",
+            "name": "concat([parameters('cbvmname')-availabilityset)",
             "properties": {
                 "PlatformUpdateDomainCount": 20,
                 "PlatformFaultDomainCount": 2
@@ -176,7 +197,7 @@
             "apiVersion": "2017-03-30",
             "type": "Microsoft.Compute/availabilitySets",
             "location": "[parameters('location')]",
-            "name": "rdsh-availabilityset",
+            "name": "variables('sessionhostname')-availabilityset",
             "properties": {
                 "PlatformUpdateDomainCount": 20,
                 "PlatformFaultDomainCount": 2
@@ -360,7 +381,7 @@
         {
             "apiVersion": "2015-06-15",
             "type": "Microsoft.Network/networkInterfaces",
-            "name": "[concat('rdsh-', copyindex(), '-nic')]",
+            "name": "[concat(variables('sessionhostname'), copyindex(), '-nic')]",
             "location": "[parameters('location')]",
             "copy": {
                 "name": "rdsh-nic-loop",
@@ -394,7 +415,7 @@
             "name": "gw-vm",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/availabilitySets', 'gw-availabilityset')]",
+                "[resourceId('Microsoft.Compute/availabilitySets', concat([parameters('gwvmname')-availabilityset))]",
                 "Microsoft.Network/networkInterfaces/gw-nic"
             ],
             "properties": {
@@ -402,7 +423,7 @@
                     "vmSize": "Standard_A2"
                 },
                 "availabilitySet": {
-                    "id": "[resourceId('Microsoft.Compute/availabilitySets', 'gw-availabilityset')]"
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', concat([parameters('gwvmname')-availabilityset))]"
                 },
                 "osProfile": {
                     "computerName": "gateway",
@@ -470,25 +491,25 @@
         {
             "apiVersion": "2017-03-30",
             "type": "Microsoft.Compute/virtualMachines",
-            "name": "[concat('rdsh-', copyindex())]",
+            "name": "[concat(variables('sessionhostname'), copyindex())]",
             "location": "[parameters('location')]",
             "copy": {
                 "name": "rdsh-vm-loop",
                 "count": "[parameters('numberOfRdshInstances')]"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/availabilitySets', 'rdsh-availabilityset')]",
-                "[concat('Microsoft.Network/networkInterfaces/', 'rdsh-', copyindex(), '-nic')]"
+                "[resourceId('Microsoft.Compute/availabilitySets', concat(variables('sessionhostname')-availabilityset))]",
+                "[concat('Microsoft.Network/networkInterfaces/', variables('sessionhostname'), copyindex(), '-nic')]"
             ],
             "properties": {
                 "hardwareProfile": {
                     "vmSize": "[parameters('rdshVmSize')]"
                 },
                 "availabilitySet": {
-                    "id": "[resourceId('Microsoft.Compute/availabilitySets', 'rdsh-availabilityset')]"
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', concat(variables('sessionhostname')-availabilityset))]"
                 },
                 "osProfile": {
-                    "computerName": "[concat('rdsh-', copyIndex())]",
+                    "computerName": "[concat(variables('sessionhostname'), copyIndex())]",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]"
                 },
@@ -500,7 +521,7 @@
                         "version": "latest"
                     },
                     "osDisk": {
-                        "name": "[concat('rdsh-', copyIndex(),'_OSDisk')]",
+                        "name": "[concat(variables('sessionhostname'), copyIndex(),'_OSDisk')]",
                         "caching": "ReadWrite",
                         "createOption": "FromImage",
                         "managedDisk": {
@@ -511,7 +532,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat('rdsh-', copyindex(), '-nic'))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('sessionhostname'), copyindex(), '-nic'))]"
                         }
                     ]
                 }
@@ -520,10 +541,10 @@
                 {
                     "apiVersion": "2015-06-15",
                     "type": "Microsoft.Compute/virtualMachines/extensions",
-                    "name": "[concat('rdsh-', copyindex(),'/sessionhost')]",
+                    "name": "[concat(variables('sessionhostname'), copyindex(),'/sessionhost')]",
                     "location": "[parameters('location')]",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Compute/virtualMachines', concat('rdsh-', copyindex()))]"
+                        "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('sessionhostname'), copyindex()))]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.Powershell",
@@ -553,10 +574,10 @@
         {
             "apiVersion": "2017-03-30",
             "type": "Microsoft.Compute/virtualMachines",
-            "name": "cb-vm",
+            "name": "[parameters('cbvmname')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/availabilitySets', 'cb-availabilityset')]",
+                "[resourceId('Microsoft.Compute/availabilitySets', concat([parameters('cbvmname')-availabilityset))]",
                 "Microsoft.Network/networkInterfaces/cb-nic",
                 "rdsh-vm-loop"
             ],
@@ -565,7 +586,7 @@
                     "vmSize": "Standard_A2"
                 },
                 "availabilitySet": {
-                    "id": "[resourceId('Microsoft.Compute/availabilitySets', 'cb-availabilityset')]"
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', concat([parameters('cbvmname')-availabilityset))]"
                 },
                 "osProfile": {
                     "computerName": "broker",
@@ -603,8 +624,8 @@
             "apiVersion": "2015-06-15",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines', 'cb-vm')]",
-                "Microsoft.Compute/virtualMachines/gw-vm/extensions/gateway",
+                "[parameters('cbvmname')]",
+                "[concat('Microsoft.Compute/virtualMachines/'[parameters('gwvmname')]'/extensions/gateway')]",
                 "rdsh-vm-loop"
             ],
             "properties": {
@@ -624,7 +645,7 @@
                         "domainName": "[parameters('adDomainName')]",
                         "externalfqdn": "[reference(variables('gatewayIpRef')).dnsSettings.fqdn]",
                         "numberOfRdshInstances": "[parameters('numberOfRdshInstances')]",
-                        "sessionHostNamingPrefix": "rdsh-",
+                        "sessionHostNamingPrefix": "variables('sessionhostname')",
                         "webAccessServer": "[concat('gateway.',parameters('adDomainName'))]"
                     }
                 },
