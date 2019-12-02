@@ -391,7 +391,7 @@
         {
             "apiVersion": "2017-03-30",
             "type": "Microsoft.Compute/virtualMachines",
-            "name": "gw-vm",
+            "name": "gw-rename-vm",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/availabilitySets', 'gw-availabilityset')]",
@@ -437,10 +437,10 @@
                 {
                     "apiVersion": "2015-06-15",
                     "type": "Microsoft.Compute/virtualMachines/extensions",
-                    "name": "gw-vm/gateway",
+                    "name": "gw-rename-vm/gateway",
                     "location": "[parameters('location')]",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Compute/virtualMachines', 'gw-vm')]"
+                        "[resourceId('Microsoft.Compute/virtualMachines', 'gw-rename-vm')]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.Powershell",
@@ -553,7 +553,7 @@
         {
             "apiVersion": "2017-03-30",
             "type": "Microsoft.Compute/virtualMachines",
-            "name": "cb-vm",
+            "name": "cb-vmrenam",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/availabilitySets', 'cb-availabilityset')]",
@@ -599,12 +599,12 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "cb-vm/rdsdeployment",
+            "name": "cb-vmrenam/rdsdeployment",
             "apiVersion": "2015-06-15",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines', 'cb-vm')]",
-                "Microsoft.Compute/virtualMachines/gw-vm/extensions/gateway",
+                "[resourceId('Microsoft.Compute/virtualMachines', 'cb-vmrenam')]",
+                "Microsoft.Compute/virtualMachines/gw-rename-vm/extensions/gateway",
                 "rdsh-vm-loop"
             ],
             "properties": {
