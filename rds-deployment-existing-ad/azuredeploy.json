@@ -423,7 +423,7 @@
                     "vmSize": "Standard_A2"
                 },
                 "availabilitySet": {
-                    "id": "[resourceId('Microsoft.Compute/availabilitySets', concat(parameters('gwvmname'),'-availabilityset'))]"
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', concat(parameters('gwvmname'),'-availabilityset'))]",
                 },
                 "osProfile": {
                     "computerName": "gateway",
