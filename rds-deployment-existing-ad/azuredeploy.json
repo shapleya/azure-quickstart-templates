@@ -171,7 +171,7 @@
             "apiVersion": "2017-03-30",
             "type": "Microsoft.Compute/availabilitySets",
             "location": "[parameters('location')]",
-            "name": "concat([parameters('gwvmname')-availabilityset)",
+            "name": "concat([parameters('gwvmname'),'-availabilityset')",
             "properties": {
                 "PlatformUpdateDomainCount": 20,
                 "PlatformFaultDomainCount": 2
@@ -184,7 +184,7 @@
             "apiVersion": "2017-03-30",
             "type": "Microsoft.Compute/availabilitySets",
             "location": "[parameters('location')]",
-            "name": "concat([parameters('cbvmname')-availabilityset)",
+            "name": "concat([parameters('cbvmname'),'-availabilityset')",
             "properties": {
                 "PlatformUpdateDomainCount": 20,
                 "PlatformFaultDomainCount": 2
@@ -415,7 +415,7 @@
             "name": "gw-vm",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/availabilitySets', concat(parameters('gwvmname')-availabilityset))]",
+                "[resourceId('Microsoft.Compute/availabilitySets', concat(parameters('gwvmname'),'-availabilityset'))]",
                 "Microsoft.Network/networkInterfaces/gw-nic"
             ],
             "properties": {
@@ -423,7 +423,7 @@
                     "vmSize": "Standard_A2"
                 },
                 "availabilitySet": {
-                    "id": "[resourceId('Microsoft.Compute/availabilitySets', concat(parameters('gwvmname')-availabilityset))]"
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', concat(parameters('gwvmname'),'-availabilityset'))]",
                 },
                 "osProfile": {
                     "computerName": "gateway",
@@ -577,7 +577,7 @@
             "name": "[parameters('cbvmname')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/availabilitySets', concat([parameters('cbvmname')-availabilityset))]",
+                "[resourceId('Microsoft.Compute/availabilitySets', concat([parameters('cbvmname'), '-availabilityset'))]",
                 "Microsoft.Network/networkInterfaces/cb-nic",
                 "rdsh-vm-loop"
             ],
@@ -586,7 +586,7 @@
                     "vmSize": "Standard_A2"
                 },
                 "availabilitySet": {
-                    "id": "[resourceId('Microsoft.Compute/availabilitySets', concat([parameters('cbvmname')-availabilityset))]"
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', concat([parameters('cbvmname'), '-availabilityset'))]"
                 },
                 "osProfile": {
                     "computerName": "broker",
@@ -625,7 +625,7 @@
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[parameters('cbvmname')]",
-                "[concat('Microsoft.Compute/virtualMachines/'[parameters('gwvmname')]'/extensions/gateway')]",
+                "[concat('Microsoft.Compute/virtualMachines/',[parameters('gwvmname')],'/extensions/gateway')]",
                 "rdsh-vm-loop"
             ],
             "properties": {
