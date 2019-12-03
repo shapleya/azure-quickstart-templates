@@ -176,7 +176,7 @@
             "apiVersion": "2017-03-30",
             "type": "Microsoft.Compute/availabilitySets",
             "location": "[parameters('location')]",
-            "name": "rdsh-availabilityset",
+            "name": "OSNWEUSRDSH-availabilityset",
             "properties": {
                 "PlatformUpdateDomainCount": 20,
                 "PlatformFaultDomainCount": 2
@@ -290,7 +290,7 @@
         {
             "apiVersion": "2015-06-15",
             "type": "Microsoft.Network/networkInterfaces",
-            "name": "gw-nic",
+            "name": "OSNWEUSRDGW01-nic",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "Microsoft.Network/loadBalancers/loadBalancer"
@@ -330,7 +330,7 @@
         {
             "apiVersion": "2015-06-15",
             "type": "Microsoft.Network/networkInterfaces",
-            "name": "cb-nic",
+            "name": "OSNWEUSRDCB01-nic",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "Microsoft.Network/loadBalancers/loadBalancer"
@@ -360,10 +360,10 @@
         {
             "apiVersion": "2015-06-15",
             "type": "Microsoft.Network/networkInterfaces",
-            "name": "[concat('rdsh-', copyindex(), '-nic')]",
+            "name": "[concat('OSNWEUSRDSH-', copyindex(), '-nic')]",
             "location": "[parameters('location')]",
             "copy": {
-                "name": "rdsh-nic-loop",
+                "name": "OSNWEUSRDSH-nic-loop",
                 "count": "[parameters('numberOfRdshInstances')]"
             },
             "dependsOn": [
@@ -391,11 +391,11 @@
         {
             "apiVersion": "2017-03-30",
             "type": "Microsoft.Compute/virtualMachines",
-            "name": "gw-rename-vm",
+            "name": "OSNWEUSRDGW01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/availabilitySets', 'gw-availabilityset')]",
-                "Microsoft.Network/networkInterfaces/gw-nic"
+                "Microsoft.Network/networkInterfaces/OSNWEUSRDGW01-nic"
             ],
             "properties": {
                 "hardwareProfile": {
@@ -417,7 +417,7 @@
                         "version": "latest"
                     },
                     "osDisk": {
-                        "name": "gw_OSDisk",
+                        "name": "OSNWEUSRDGW01_OSdisk",
                         "caching": "ReadWrite",
                         "createOption": "FromImage",
                         "managedDisk": {
@@ -428,7 +428,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces','gw-nic')]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces','OSNWEUSRDGW01-nic')]"
                         }
                     ]
                 }
@@ -437,10 +437,10 @@
                 {
                     "apiVersion": "2015-06-15",
                     "type": "Microsoft.Compute/virtualMachines/extensions",
-                    "name": "gw-rename-vm/gateway",
+                    "name": "OSNWEUSRDGW01/gateway",
                     "location": "[parameters('location')]",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Compute/virtualMachines', 'gw-rename-vm')]"
+                        "[resourceId('Microsoft.Compute/virtualMachines', 'OSNWEUSRDGW01')]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.Powershell",
@@ -470,25 +470,25 @@
         {
             "apiVersion": "2017-03-30",
             "type": "Microsoft.Compute/virtualMachines",
-            "name": "[concat('rdsh-', copyindex())]",
+            "name": "[concat('OSNWEUSRDSH-', copyindex())]",
             "location": "[parameters('location')]",
             "copy": {
-                "name": "rdsh-vm-loop",
+                "name": "OSNWEUSRDSH-vm-loop",
                 "count": "[parameters('numberOfRdshInstances')]"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/availabilitySets', 'rdsh-availabilityset')]",
-                "[concat('Microsoft.Network/networkInterfaces/', 'rdsh-', copyindex(), '-nic')]"
+                "[resourceId('Microsoft.Compute/availabilitySets', 'OSNWEUSRDSH-availabilityset')]",
+                "[concat('Microsoft.Network/networkInterfaces/', 'OSNWEUSRDSH-', copyindex(), '-nic')]"
             ],
             "properties": {
                 "hardwareProfile": {
                     "vmSize": "[parameters('rdshVmSize')]"
                 },
                 "availabilitySet": {
-                    "id": "[resourceId('Microsoft.Compute/availabilitySets', 'rdsh-availabilityset')]"
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', 'OSNWEUSRDSH-availabilityset')]"
                 },
                 "osProfile": {
-                    "computerName": "[concat('rdsh-', copyIndex())]",
+                    "computerName": "[concat('OSNWEUSRDSH-', copyIndex())]",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]"
                 },
@@ -500,7 +500,7 @@
                         "version": "latest"
                     },
                     "osDisk": {
-                        "name": "[concat('rdsh-', copyIndex(),'_OSDisk')]",
+                        "name": "[concat('OSNWEUSRDSH-', copyIndex(),'_OSDisk')]",
                         "caching": "ReadWrite",
                         "createOption": "FromImage",
                         "managedDisk": {
@@ -511,7 +511,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat('rdsh-', copyindex(), '-nic'))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat('OSNWEUSRDSH-', copyindex(), '-nic'))]"
                         }
                     ]
                 }
@@ -520,10 +520,10 @@
                 {
                     "apiVersion": "2015-06-15",
                     "type": "Microsoft.Compute/virtualMachines/extensions",
-                    "name": "[concat('rdsh-', copyindex(),'/sessionhost')]",
+                    "name": "[concat('OSNWEUSRDSH-', copyindex(),'/sessionhost')]",
                     "location": "[parameters('location')]",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Compute/virtualMachines', concat('rdsh-', copyindex()))]"
+                        "[resourceId('Microsoft.Compute/virtualMachines', concat('OSNWEUSRDSH-', copyindex()))]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.Powershell",
@@ -553,12 +553,12 @@
         {
             "apiVersion": "2017-03-30",
             "type": "Microsoft.Compute/virtualMachines",
-            "name": "cb-vmrenam",
+            "name": "OSNWEUSRDCB01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/availabilitySets', 'cb-availabilityset')]",
-                "Microsoft.Network/networkInterfaces/cb-nic",
-                "rdsh-vm-loop"
+                "Microsoft.Network/networkInterfaces/OSNWEUSRDCB01-nic",
+                "OSNWEUSRDSH-vm-loop"
             ],
             "properties": {
                 "hardwareProfile": {
@@ -580,7 +580,7 @@
                         "version": "latest"
                     },
                     "osDisk": {
-                        "name": "cb_OSDisk",
+                        "name": "OSNWEUSRDCB01_OSdisk",
                         "caching": "ReadWrite",
                         "createOption": "FromImage",
                         "managedDisk": {
@@ -591,7 +591,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces','cb-nic')]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces','OSNWEUSRDCB01-nic')]"
                         }
                     ]
                 }
@@ -599,13 +599,13 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "cb-vmrenam/rdsdeployment",
+            "name": "OSNWEUSRDCB01/rdsdeployment",
             "apiVersion": "2015-06-15",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines', 'cb-vmrenam')]",
-                "Microsoft.Compute/virtualMachines/gw-rename-vm/extensions/gateway",
-                "rdsh-vm-loop"
+                "[resourceId('Microsoft.Compute/virtualMachines', 'OSNWEUSRDCB01')]",
+                "Microsoft.Compute/virtualMachines/OSNWEUSRDGW01/extensions/gateway",
+                "OSNWEUSRDSH-vm-loop"
             ],
             "properties": {
                 "publisher": "Microsoft.Powershell",
@@ -624,7 +624,7 @@
                         "domainName": "[parameters('adDomainName')]",
                         "externalfqdn": "[reference(variables('gatewayIpRef')).dnsSettings.fqdn]",
                         "numberOfRdshInstances": "[parameters('numberOfRdshInstances')]",
-                        "sessionHostNamingPrefix": "rdsh-",
+                        "sessionHostNamingPrefix": "OSNWEUSRDSH-",
                         "webAccessServer": "[concat('gateway.',parameters('adDomainName'))]"
                     }
                 },
