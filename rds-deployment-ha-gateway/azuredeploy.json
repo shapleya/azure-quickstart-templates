@@ -121,7 +121,7 @@
         "imageOffer": "WindowsServer",
         "subnet-id": "[resourceId(parameters('existingVnetResourceGroup'), 'Microsoft.Network/virtualNetworks/subnets', parameters('existingVnet'), parameters('existingSubnet'))]",
         "publicIpRef": "publicIp",
-        "assetLocation": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/rds-deployment"
+        "assetLocation": "https://raw.githubusercontent.com/shapleya/azure-quickstart-templates/master/rds-deployment"
     },
     "resources": [
         {
@@ -284,12 +284,12 @@
             }
         },
         {
-            "name": "[concat('gw-vm-',copyindex())]",
+            "name": "[concat('OSNCCARDGW-',copyindex())]",
             "type": "Microsoft.Compute/virtualMachines",
             "location": "[parameters('location')]",
             "apiVersion": "2017-03-30",
             "copy": {
-                "name": "gw-vm-loop",
+                "name": "OSNCCARDGW-loop",
                 "count": "[parameters('numberOfWebGwInstances')]"
             },
             "dependsOn": [
@@ -316,7 +316,7 @@
                         "version": "latest"
                     },
                     "osDisk": {
-                        "name": "[concat('gw-vm-',copyindex(),'_OSDisk')]",
+                        "name": "[concat('OSNCCARDGW-',copyindex(),'_OSDisk')]",
                         "caching": "ReadWrite",
                         "createOption": "FromImage",
                         "managedDisk": {
@@ -334,12 +334,12 @@
             },
             "resources": [
                 {
-                    "name": "[concat('gw-vm-',copyindex(),'/Gateway')]",
+                    "name": "[concat('OSNCCARDGW-',copyindex(),'/Gateway')]",
                     "type": "Microsoft.Compute/virtualMachines/extensions",
                     "location": "[parameters('location')]",
                     "apiVersion": "2017-12-01",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Compute/virtualMachines', Concat('gw-vm-',copyindex()))]"
+                        "[resourceId('Microsoft.Compute/virtualMachines', Concat('OSNCCARDGW-',copyindex()))]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.Powershell",
@@ -367,11 +367,11 @@
                 {
                     "apiVersion": "2015-06-15",
                     "type": "Microsoft.Compute/virtualMachines/extensions",
-                    "name": "[concat('gw-vm-',copyindex(),'/WebAndGwFarmAdd_PostConfig1.1')]",
+                    "name": "[concat('OSNCCARDGW-',copyindex(),'/WebAndGwFarmAdd_PostConfig1.1')]",
                     "location": "[parameters('location')]",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Compute/virtualMachines', Concat('gw-vm-',copyindex()))]",
-                        "[concat('Microsoft.Compute/virtualMachines/gw-vm-',copyindex(),'/extensions/','Gateway')]"
+                        "[resourceId('Microsoft.Compute/virtualMachines', Concat('OSNCCARDGW-',copyindex()))]",
+                        "[concat('Microsoft.Compute/virtualMachines/OSNCCARDGW-',copyindex(),'/extensions/','Gateway')]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.Compute",
