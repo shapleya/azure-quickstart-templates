@@ -102,7 +102,7 @@
         "cbdnsLabelPrefix": "[toLower(concat('cbd', resourceGroup().name))]",
         "imagePublisher": "MicrosoftWindowsServer",
         "imageOffer": "WindowsServer",
-        "dnsServerPrivateIp": "10.84.9.5",
+        "dnsServerPrivateIp": "10.84.9.10",
         "subnet-id": "[concat(resourceId(parameters('adVnetRG'),'Microsoft.Network/virtualNetworks',parameters('adVnetName')),'/subnets/',parameters('adSubnetName'))]",
         "publicIpRef": "publicIp",
         "brokerIpRef": "brokerpublicIp",
@@ -176,7 +176,7 @@
             "apiVersion": "2017-03-30",
             "type": "Microsoft.Compute/availabilitySets",
             "location": "[parameters('location')]",
-            "name": "OSNCCARDSH-availabilityset",
+            "name": "OSPCCARDSH-availabilityset",
             "properties": {
                 "PlatformUpdateDomainCount": 20,
                 "PlatformFaultDomainCount": 2
@@ -290,7 +290,7 @@
         {
             "apiVersion": "2015-06-15",
             "type": "Microsoft.Network/networkInterfaces",
-            "name": "OSNCCARDGW01-nic",
+            "name": "OSPCCARDGW01-nic",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "Microsoft.Network/loadBalancers/loadBalancer"
@@ -330,7 +330,7 @@
         {
             "apiVersion": "2015-06-15",
             "type": "Microsoft.Network/networkInterfaces",
-            "name": "OSNCCARDCB01-nic",
+            "name": "OSPCCARDCB01-nic",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "Microsoft.Network/loadBalancers/loadBalancer"
@@ -360,10 +360,10 @@
         {
             "apiVersion": "2015-06-15",
             "type": "Microsoft.Network/networkInterfaces",
-            "name": "[concat('OSNCCARDSH-', copyindex(), '-nic')]",
+            "name": "[concat('OSPCCARDSH-', copyindex(), '-nic')]",
             "location": "[parameters('location')]",
             "copy": {
-                "name": "OSNCCARDSH-nic-loop",
+                "name": "OSPCCARDSH-nic-loop",
                 "count": "[parameters('numberOfRdshInstances')]"
             },
             "dependsOn": [
@@ -391,11 +391,11 @@
         {
             "apiVersion": "2017-03-30",
             "type": "Microsoft.Compute/virtualMachines",
-            "name": "OSNCCARDGW01",
+            "name": "OSPCCARDGW01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/availabilitySets', 'gw-availabilityset')]",
-                "Microsoft.Network/networkInterfaces/OSNCCARDGW01-nic"
+                "Microsoft.Network/networkInterfaces/OSPCCARDGW01-nic"
             ],
             "properties": {
                 "hardwareProfile": {
@@ -405,7 +405,7 @@
                     "id": "[resourceId('Microsoft.Compute/availabilitySets', 'gw-availabilityset')]"
                 },
                 "osProfile": {
-                    "computerName": "OSNCCARDGW01",
+                    "computerName": "OSPCCARDGW01",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]"
                 },
@@ -417,7 +417,7 @@
                         "version": "latest"
                     },
                     "osDisk": {
-                        "name": "OSNCCARDGW01_OSdisk",
+                        "name": "OSPCCARDGW01_OSdisk",
                         "caching": "ReadWrite",
                         "createOption": "FromImage",
                         "managedDisk": {
@@ -428,7 +428,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces','OSNCCARDGW01-nic')]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces','OSPCCARDGW01-nic')]"
                         }
                     ]
                 }
@@ -437,10 +437,10 @@
                 {
                     "apiVersion": "2015-06-15",
                     "type": "Microsoft.Compute/virtualMachines/extensions",
-                    "name": "OSNCCARDGW01/gateway",
+                    "name": "OSPCCARDGW01/gateway",
                     "location": "[parameters('location')]",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Compute/virtualMachines', 'OSNCCARDGW01')]"
+                        "[resourceId('Microsoft.Compute/virtualMachines', 'OSPCCARDGW01')]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.Powershell",
@@ -470,25 +470,25 @@
         {
             "apiVersion": "2017-03-30",
             "type": "Microsoft.Compute/virtualMachines",
-            "name": "[concat('OSNCCARDSH-', copyindex())]",
+            "name": "[concat('OSPCCARDSH-', copyindex())]",
             "location": "[parameters('location')]",
             "copy": {
-                "name": "OSNCCARDSH-vm-loop",
+                "name": "OSPCCARDSH-vm-loop",
                 "count": "[parameters('numberOfRdshInstances')]"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/availabilitySets', 'OSNCCARDSH-availabilityset')]",
-                "[concat('Microsoft.Network/networkInterfaces/', 'OSNCCARDSH-', copyindex(), '-nic')]"
+                "[resourceId('Microsoft.Compute/availabilitySets', 'OSPCCARDSH-availabilityset')]",
+                "[concat('Microsoft.Network/networkInterfaces/', 'OSPCCARDSH-', copyindex(), '-nic')]"
             ],
             "properties": {
                 "hardwareProfile": {
                     "vmSize": "[parameters('rdshVmSize')]"
                 },
                 "availabilitySet": {
-                    "id": "[resourceId('Microsoft.Compute/availabilitySets', 'OSNCCARDSH-availabilityset')]"
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', 'OSPCCARDSH-availabilityset')]"
                 },
                 "osProfile": {
-                    "computerName": "[concat('OSNCCARDSH-', copyIndex())]",
+                    "computerName": "[concat('OSPCCARDSH-', copyIndex())]",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]"
                 },
@@ -500,7 +500,7 @@
                         "version": "latest"
                     },
                     "osDisk": {
-                        "name": "[concat('OSNCCARDSH-', copyIndex(),'_OSDisk')]",
+                        "name": "[concat('OSPCCARDSH-', copyIndex(),'_OSDisk')]",
                         "caching": "ReadWrite",
                         "createOption": "FromImage",
                         "managedDisk": {
@@ -511,7 +511,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat('OSNCCARDSH-', copyindex(), '-nic'))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat('OSPCCARDSH-', copyindex(), '-nic'))]"
                         }
                     ]
                 }
@@ -520,10 +520,10 @@
                 {
                     "apiVersion": "2015-06-15",
                     "type": "Microsoft.Compute/virtualMachines/extensions",
-                    "name": "[concat('OSNCCARDSH-', copyindex(),'/sessionhost')]",
+                    "name": "[concat('OSPCCARDSH-', copyindex(),'/sessionhost')]",
                     "location": "[parameters('location')]",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Compute/virtualMachines', concat('OSNCCARDSH-', copyindex()))]"
+                        "[resourceId('Microsoft.Compute/virtualMachines', concat('OSPCCARDSH-', copyindex()))]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.Powershell",
@@ -553,12 +553,12 @@
         {
             "apiVersion": "2017-03-30",
             "type": "Microsoft.Compute/virtualMachines",
-            "name": "OSNCCARDCB01",
+            "name": "OSPCCARDCB01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/availabilitySets', 'cb-availabilityset')]",
-                "Microsoft.Network/networkInterfaces/OSNCCARDCB01-nic",
-                "OSNCCARDSH-vm-loop"
+                "Microsoft.Network/networkInterfaces/OSPCCARDCB01-nic",
+                "OSPCCARDSH-vm-loop"
             ],
             "properties": {
                 "hardwareProfile": {
@@ -568,7 +568,7 @@
                     "id": "[resourceId('Microsoft.Compute/availabilitySets', 'cb-availabilityset')]"
                 },
                 "osProfile": {
-                    "computerName": "OSNCCARDCB01",
+                    "computerName": "OSPCCARDCB01",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]"
                 },
@@ -580,7 +580,7 @@
                         "version": "latest"
                     },
                     "osDisk": {
-                        "name": "OSNCCARDCB01_OSdisk",
+                        "name": "OSPCCARDCB01_OSdisk",
                         "caching": "ReadWrite",
                         "createOption": "FromImage",
                         "managedDisk": {
@@ -591,7 +591,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces','OSNCCARDCB01-nic')]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces','OSPCCARDCB01-nic')]"
                         }
                     ]
                 }
@@ -599,13 +599,13 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "OSNCCARDCB01/rdsdeployment",
+            "name": "OSPCCARDCB01/rdsdeployment",
             "apiVersion": "2015-06-15",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines', 'OSNCCARDCB01')]",
-                "Microsoft.Compute/virtualMachines/OSNCCARDGW01/extensions/gateway",
-                "OSNCCARDSH-vm-loop"
+                "[resourceId('Microsoft.Compute/virtualMachines', 'OSPCCARDCB01')]",
+                "Microsoft.Compute/virtualMachines/OSPCCARDGW01/extensions/gateway",
+                "OSPCCARDSH-vm-loop"
             ],
             "properties": {
                 "publisher": "Microsoft.Powershell",
@@ -624,7 +624,7 @@
                         "domainName": "[parameters('adDomainName')]",
                         "externalfqdn": "[reference(variables('gatewayIpRef')).dnsSettings.fqdn]",
                         "numberOfRdshInstances": "[parameters('numberOfRdshInstances')]",
-                        "sessionHostNamingPrefix": "OSNCCARDSH-",
+                        "sessionHostNamingPrefix": "OSPCCARDSH-",
                         "webAccessServer": "[concat('gateway.',parameters('adDomainName'))]"
                     }
                 },
